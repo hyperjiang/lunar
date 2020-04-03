@@ -1,0 +1,10 @@
+{
+  "appId": "SampleApp",
+  "cluster": "default",
+  "namespaceName": "application",
+  "configurations": {
+    "portal.elastic.document.type": "biz",
+    "portal.elastic.cluster.name": "hermes-es-fws"
+  },
+  "releaseKey": "20170430092936-dee2d58e74515ff3"
+}

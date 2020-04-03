@@ -1,0 +1,4 @@
+{
+  "portal.elastic.document.type": "biz",
+  "portal.elastic.cluster.name": "hermes-es-fws"
+}
