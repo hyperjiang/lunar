@@ -7,3 +7,5 @@
 [![Release](https://img.shields.io/github/release/hyperjiang/lunar.svg)](https://github.com/hyperjiang/lunar/releases)
 
 Probably the most elegant apollo client in golang.
+
+Apollo: https://github.com/ctripcorp/apollo

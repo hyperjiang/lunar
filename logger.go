@@ -16,5 +16,4 @@ func (f LoggerFunc) Printf(msg string, args ...interface{}) { f(msg, args...) }
 // DummyLogger writes nothing
 var DummyLogger = LoggerFunc(func(string, ...interface{}) {})
 
-// DefaultLogger is the default logger
-var DefaultLogger = LoggerFunc(log.Printf)
+var defaultLogger = LoggerFunc(log.Printf)

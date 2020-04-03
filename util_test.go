@@ -31,13 +31,3 @@ func TestNormalizeURL(t *testing.T) {
 		should.Equal(test.want, normalizeURL(test.url))
 	}
 }
-
-func TestSplitCommaSeparatedURL(t *testing.T) {
-	should := require.New(t)
-
-	urls := splitCommaSeparatedURL("192.168.1.1, http://localhost/")
-
-	want := []string{"http://192.168.1.1", "http://localhost"}
-
-	should.Equal(want, urls)
-}
