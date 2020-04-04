@@ -14,7 +14,7 @@ Default settings of `lunar`:
 
 - default namespace is `application`
 - default server is `localhost:8080`
-- default http client timeout is 90s
+- default http client timeout is `90s`
 
 ## Usage
 
@@ -29,8 +29,11 @@ app.GetValue(key)
 // get value of key in namespace ns
 app.GetValueInNamespace(key, "ns")
 
-// get all the items in ns namespace
-app.GetItems("ns")
+// get all the items in default namespace
+app.GetItems()
+
+// get all the items in namespace ns
+app.GetItemsInNamespace("ns")
 
 // get the content of ns namespace, if the format of ns is properties then will return json string
 app.GetContent("ns")

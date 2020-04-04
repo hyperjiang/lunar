@@ -1,0 +1,9 @@
+{
+  "appId": "SampleApp",
+  "cluster": "default",
+  "namespaceName": "a.txt",
+  "configurations": {
+    "content": "greetings"
+  },
+  "releaseKey": "20200404120733-61d0634459bac784"
+}

@@ -25,9 +25,6 @@ type ApolloClient struct {
 	ClientIP string
 }
 
-// Items is items under namespace
-type Items map[string]string
-
 // make sure ApolloClient implements ApolloAPI
 var _ ApolloAPI = new(ApolloClient)
 

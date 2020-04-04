@@ -24,7 +24,7 @@ type Options struct {
 // NewOptions creates options with defaults
 func NewOptions(opts ...Option) Options {
 	var options = Options{
-		Server:        defaultServer,
+		Server:        normalizeURL(defaultServer),
 		Cluster:       defaultCluster,
 		ClientTimeout: defaultClientTimeout,
 		Logger:        defaultLogger,
