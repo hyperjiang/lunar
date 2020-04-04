@@ -6,9 +6,9 @@
 [![codecov](https://codecov.io/gh/hyperjiang/lunar/branch/master/graph/badge.svg)](https://codecov.io/gh/hyperjiang/lunar)
 [![Release](https://img.shields.io/github/release/hyperjiang/lunar.svg)](https://github.com/hyperjiang/lunar/releases)
 
-Probably the most elegant apollo client in golang. This library has no third-party dependency.
+Probably the most elegant ctrip apollo client in golang. This library has no third-party dependency.
 
-Apollo: https://github.com/ctripcorp/apollo
+Ctrip Apollo: https://github.com/ctripcorp/apollo
 
 Default settings of `lunar`:
 
@@ -19,6 +19,8 @@ Default settings of `lunar`:
 ## Usage
 
 ```
+import "github.com/hyperjiang/lunar"
+
 key := "foo"
 
 app := lunar.New("myAppID", lunar.WithServer("localhost:8080"))

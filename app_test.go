@@ -3,6 +3,7 @@ package lunar
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"net/url"
 	"testing"
 
@@ -23,7 +24,7 @@ func TestLunarTestSuite(t *testing.T) {
 
 // SetupSuite run once at the very start of the testing suite, before any tests are run.
 func (ts *LunarTestSuite) SetupSuite() {
-	ts.app = New("SampleApp")
+	ts.app = New("SampleApp", WithLogger(Printf))
 }
 
 // TearDownSuite run once at the very end of the testing suite, after all tests have been run.
@@ -42,7 +43,7 @@ func (ts *LunarTestSuite) mockGetNamespace(namespace string) {
 
 	gock.New(ts.app.Server).
 		Get(url).
-		Reply(200).
+		Reply(http.StatusOK).
 		BodyString(string(resBody))
 }
 

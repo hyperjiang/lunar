@@ -3,6 +3,7 @@ package lunar
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"net/url"
 	"testing"
 
@@ -45,7 +46,7 @@ func (ts *ApolloClientTestSuite) TestGetCachedItems() {
 
 	gock.New(ts.client.Server).
 		Get(url).
-		Reply(200).
+		Reply(http.StatusOK).
 		BodyString(string(resBody))
 
 	res, err := ts.client.GetCachedItems("application")
@@ -68,13 +69,23 @@ func (ts *ApolloClientTestSuite) TestGetNamespace() {
 
 	gock.New(ts.client.Server).
 		Get(url).
-		Reply(200).
+		Reply(http.StatusOK).
 		BodyString(string(resBody))
 
 	res, err := ts.client.GetNamespace("", "")
 
 	should.NoError(err)
+	should.Len(res.Items, 2)
 	should.Equal("20170430092936-dee2d58e74515ff3", res.ReleaseKey)
+
+	gock.New(ts.client.Server).
+		Get(url).
+		Reply(http.StatusNotModified)
+
+	res, err = ts.client.GetNamespace("", "")
+
+	should.NoError(err)
+	should.Len(res.Items, 0)
 }
 
 func (ts *ApolloClientTestSuite) TestGetNotifications() {
@@ -83,16 +94,30 @@ func (ts *ApolloClientTestSuite) TestGetNotifications() {
 	resBody, err := ioutil.ReadFile("./mocks/GetNotifications.json")
 	should.NoError(err)
 
+	url := "/notifications/v2"
+
 	gock.New(ts.client.Server).
-		Get("/notifications/v2").
+		Get(url).
 		MatchParam("appId", ts.client.AppID).
 		MatchParam("cluster", ts.client.Cluster).
-		Reply(200).
+		Reply(http.StatusOK).
 		BodyString(string(resBody))
 
 	res, err := ts.client.GetNotifications(nil)
 
 	should.NoError(err)
+	should.Len(res, 1)
 	should.Equal(defaultNamespace, res[0].Namespace)
 	should.Equal(101, res[0].NotificationID)
+
+	gock.New(ts.client.Server).
+		Get(url).
+		MatchParam("appId", ts.client.AppID).
+		MatchParam("cluster", ts.client.Cluster).
+		Reply(http.StatusNotModified)
+
+	res, err = ts.client.GetNotifications(nil)
+
+	should.NoError(err)
+	should.Len(res, 0)
 }

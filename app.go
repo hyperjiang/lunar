@@ -15,10 +15,10 @@ type Lunar interface {
 
 // App represents a single application, an application has a unique app id and manage multiple namespaces.
 type App struct {
-	Options           // inherited options
-	ID      string    // app id
-	Client  ApolloAPI // the apollo client
-	meta    sync.Map  // key: namespace name, value: NamespaceMeta
+	Options                 // inherited options
+	ID            string    // app id
+	Client        ApolloAPI // the apollo client
+	releaseKeyMap sync.Map  // key: namespace, value: release key
 }
 
 // make sure App implements Lunar
@@ -37,7 +37,7 @@ func New(appID string, opts ...Option) *App {
 		Options: NewOptions(opts...),
 	}
 
-	app.Client = NewApolloClient(appID, opts...)
+	app.UseClient(NewApolloClient(appID, opts...))
 
 	return app
 }
@@ -69,16 +69,6 @@ func (app *App) GetItems() (Items, error) {
 	return app.GetItemsInNamespace(defaultNamespace)
 }
 
-// GetItemsInNamespace gets all the items in given namespace
-func (app *App) GetItemsInNamespace(namespace string) (Items, error) {
-	ns, err := app.Client.GetNamespace(namespace, "")
-	if err != nil {
-		return nil, err
-	}
-
-	return ns.Items, nil
-}
-
 // GetContent gets the content of given namespace, if the format is properties then will return json string
 func (app *App) GetContent(namespace string) (string, error) {
 	items, err := app.GetItemsInNamespace(namespace)
@@ -86,13 +76,35 @@ func (app *App) GetContent(namespace string) (string, error) {
 		return "", err
 	}
 
-	if items == nil {
-		return "", nil
-	}
-
 	if getFormat(namespace) != defaultFormat {
 		return items.Get("content"), nil
 	}
 
 	return items.String(), nil
+}
+
+// GetItemsInNamespace gets all the items in given namespace.
+// This is the most basic method of App.
+func (app *App) GetItemsInNamespace(namespace string) (Items, error) {
+	k := app.loadReleaseKey(namespace)
+
+	ns, err := app.Client.GetNamespace(namespace, k)
+	if err != nil {
+		return nil, err
+	}
+
+	app.releaseKeyMap.Store(namespace, ns.ReleaseKey)
+
+	return ns.Items, nil
+}
+
+// loads release key of given namespace
+func (app *App) loadReleaseKey(namespace string) string {
+	if m, ok := app.releaseKeyMap.Load(namespace); ok {
+		return m.(string)
+	}
+
+	app.releaseKeyMap.Store(namespace, "")
+
+	return ""
 }
