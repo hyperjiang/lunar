@@ -24,16 +24,16 @@ key := "foo"
 app := lunar.New("myAppID", lunar.WithServer("localhost:8080"))
 
 // get value of key in default namespace
-app.Get(key)
+app.GetValue(key)
 
-// get value of key in namespaces ns1 and ns2
-app.Get(key, "ns1", "ns2")
-
-// get all the configs in default namespace
-app.GetAll()
+// get value of key in namespace ns
+app.GetValueInNamespace(key, "ns")
 
 // get all the configs in ns namespace
-app.GetAll("ns")
+app.GetValues("ns")
+
+// get the content of ns namespace, if the type of ns is properties then will return configs in json format
+app.GetContent("ns")
 
 // watch changes
 app.Watch()

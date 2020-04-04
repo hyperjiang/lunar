@@ -2,6 +2,7 @@ package lunar
 
 import (
 	"net"
+	"path/filepath"
 	"strings"
 )
 
@@ -29,4 +30,14 @@ func getLocalIP() string {
 	}
 
 	return ""
+}
+
+func getFormat(namespace string) string {
+	t := filepath.Ext(namespace)
+
+	if t == "" {
+		t = defaultFormat
+	}
+
+	return strings.TrimPrefix(t, ".")
 }

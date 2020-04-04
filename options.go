@@ -8,6 +8,7 @@ const (
 	defaultServer         = "localhost:8080"
 	defaultCluster        = "default"
 	defaultNamespace      = "application"
+	defaultFormat         = "properties"
 	defaultNotificationID = -1
 	defaultClientTimeout  = time.Second * 90
 )

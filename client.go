@@ -87,6 +87,9 @@ func (c *ApolloClient) GetCachedConfigs(namespace string) (Configurations, error
 	return res, err
 }
 
+// Configurations is configurations under namespace
+type Configurations map[string]string
+
 // GetConfigsRequest is apollo request
 type GetConfigsRequest struct {
 	Namespace  string
