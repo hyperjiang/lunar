@@ -23,7 +23,7 @@ func TestApolloClientTestSuite(t *testing.T) {
 
 // SetupSuite run once at the very start of the testing suite, before any tests are run.
 func (suite *ApolloClientTestSuite) SetupSuite() {
-	suite.client, _ = NewApolloClient(WithServer("localhost:8080"), WithAppID("SampleApp"))
+	suite.client = NewApolloClient("SampleApp", WithServer("localhost:8080"), WithLogger(Printf))
 	gock.InterceptClient(suite.client.Client)
 }
 

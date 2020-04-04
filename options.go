@@ -15,7 +15,6 @@ const (
 // Options is common options
 type Options struct {
 	Server        string
-	AppID         string
 	Cluster       string
 	ClientTimeout time.Duration
 	Logger        Logger
@@ -43,13 +42,6 @@ type Option func(*Options)
 func WithServer(server string) Option {
 	return func(o *Options) {
 		o.Server = normalizeURL(server)
-	}
-}
-
-// WithAppID sets apollo app id
-func WithAppID(appID string) Option {
-	return func(o *Options) {
-		o.AppID = appID
 	}
 }
 

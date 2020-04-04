@@ -13,7 +13,8 @@ type LoggerFunc func(string, ...interface{})
 // Printf implements Logger interface
 func (f LoggerFunc) Printf(msg string, args ...interface{}) { f(msg, args...) }
 
-// DummyLogger writes nothing
-var DummyLogger = LoggerFunc(func(string, ...interface{}) {})
+// defaultLogger writes nothing
+var defaultLogger = LoggerFunc(func(string, ...interface{}) {})
 
-var defaultLogger = LoggerFunc(log.Printf)
+// Printf is a logger which wraps log.Printf
+var Printf = LoggerFunc(log.Printf)

@@ -2,51 +2,45 @@ package lunar
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 )
 
-// ApolloAPI is interface of apollo api
+// ApolloAPI is the interface of apollo api
 type ApolloAPI interface {
 	GetCachedConfigs(namespace string) (Configurations, error)
 	GetConfigs(r GetConfigsRequest) (*GetConfigsResponse, error)
 	GetNotifications(ns Notifications) (Notifications, error)
 }
 
-// make sure ApolloClient implements ApolloAPI
-var _ ApolloAPI = new(ApolloClient)
-
 // ApolloClient is the implementation of apollo client.
 //
 // https://github.com/ctripcorp/apollo/wiki/%E5%85%B6%E5%AE%83%E8%AF%AD%E8%A8%80%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8E%A5%E5%85%A5%E6%8C%87%E5%8D%97
 type ApolloClient struct {
-	Options  // inherit options
+	Options  // inherited options
+	AppID    string
 	Client   *http.Client
 	ClientIP string
 }
 
-// Configurations is apollo configurations
-type Configurations map[string]string
+// make sure ApolloClient implements ApolloAPI
+var _ ApolloAPI = new(ApolloClient)
 
 // NewApolloClient creates a apollo client
-func NewApolloClient(opts ...Option) (*ApolloClient, error) {
+func NewApolloClient(appID string, opts ...Option) *ApolloClient {
 	c := &ApolloClient{
+		AppID:    appID,
 		Options:  NewOptions(opts...),
 		ClientIP: getLocalIP(),
-	}
-
-	if c.AppID == "" {
-		return nil, errors.New("app id can not be empty")
 	}
 
 	c.Client = &http.Client{
 		Timeout: c.ClientTimeout,
 	}
 
-	return c, nil
+	return c
 }
 
 func (c *ApolloClient) get(url string, result interface{}) error {
@@ -72,7 +66,7 @@ func (c *ApolloClient) get(url string, result interface{}) error {
 		err = json.Unmarshal(body, result)
 	}
 
-	c.Logger.Printf("http status: %d", resp.StatusCode)
+	c.Logger.Printf("[%d] %s", resp.StatusCode, body)
 
 	return err
 }
@@ -103,7 +97,7 @@ type GetConfigsRequest struct {
 type GetConfigsResponse struct {
 	AppID          string         `json:"appId"`
 	Cluster        string         `json:"cluster"`
-	NamespaceName  string         `json:"namespaceName"`
+	Namespace      string         `json:"namespaceName"`
 	Configurations Configurations `json:"configurations"`
 	ReleaseKey     string         `json:"releaseKey"`
 }
