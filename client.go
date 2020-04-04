@@ -10,8 +10,8 @@ import (
 
 // ApolloAPI is the interface of apollo api
 type ApolloAPI interface {
-	GetCachedConfigs(namespace string) (Configurations, error)
-	GetConfigs(r GetConfigsRequest) (*GetConfigsResponse, error)
+	GetCachedItems(namespace string) (Items, error)
+	GetNamespace(namespace string, releaseKey string) (*Namespace, error)
 	GetNotifications(ns Notifications) (Notifications, error)
 }
 
@@ -24,6 +24,9 @@ type ApolloClient struct {
 	Client   *http.Client
 	ClientIP string
 }
+
+// Items is items under namespace
+type Items map[string]string
 
 // make sure ApolloClient implements ApolloAPI
 var _ ApolloAPI = new(ApolloClient)
@@ -71,8 +74,8 @@ func (c *ApolloClient) get(url string, result interface{}) error {
 	return err
 }
 
-// GetCachedConfigs gets cached configs from apollo
-func (c *ApolloClient) GetCachedConfigs(namespace string) (Configurations, error) {
+// GetCachedItems gets cached configs from apollo
+func (c *ApolloClient) GetCachedItems(namespace string) (Items, error) {
 	url := fmt.Sprintf("%s/configfiles/json/%s/%s/%s?ip=%s",
 		c.Server,
 		url.QueryEscape(c.AppID),
@@ -81,46 +84,37 @@ func (c *ApolloClient) GetCachedConfigs(namespace string) (Configurations, error
 		c.ClientIP,
 	)
 
-	var res Configurations
+	var res Items
 	err := c.get(url, &res)
 
 	return res, err
 }
 
-// Configurations is configurations under namespace
-type Configurations map[string]string
-
-// GetConfigsRequest is apollo request
-type GetConfigsRequest struct {
-	Namespace  string
-	ReleaseKey string
+// Namespace is apollo namespace data
+type Namespace struct {
+	AppID      string `json:"appId"`
+	Cluster    string `json:"cluster"`
+	Name       string `json:"namespaceName"`
+	Items      Items  `json:"configurations"`
+	ReleaseKey string `json:"releaseKey"`
 }
 
-// GetConfigsResponse is apollo response
-type GetConfigsResponse struct {
-	AppID          string         `json:"appId"`
-	Cluster        string         `json:"cluster"`
-	Namespace      string         `json:"namespaceName"`
-	Configurations Configurations `json:"configurations"`
-	ReleaseKey     string         `json:"releaseKey"`
-}
-
-// GetConfigs gets realtime configs from apollo
-func (c *ApolloClient) GetConfigs(r GetConfigsRequest) (*GetConfigsResponse, error) {
-	if r.Namespace == "" {
-		r.Namespace = defaultNamespace
+// GetNamespace gets realtime namespace data from apollo
+func (c *ApolloClient) GetNamespace(namespace string, releaseKey string) (*Namespace, error) {
+	if namespace == "" {
+		namespace = defaultNamespace
 	}
 
 	url := fmt.Sprintf("%s/configs/%s/%s/%s?releaseKey=%s&ip=%s",
 		c.Server,
 		url.QueryEscape(c.AppID),
 		url.QueryEscape(c.Cluster),
-		url.QueryEscape(r.Namespace),
-		url.QueryEscape(r.ReleaseKey),
+		url.QueryEscape(namespace),
+		url.QueryEscape(releaseKey),
 		c.ClientIP,
 	)
 
-	var res GetConfigsResponse
+	var res Namespace
 	err := c.get(url, &res)
 
 	return &res, err

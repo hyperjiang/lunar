@@ -33,10 +33,10 @@ func (suite *ApolloClientTestSuite) TearDownSuite() {
 	gock.Off()
 }
 
-func (suite *ApolloClientTestSuite) TestGetCachedConfigs() {
+func (suite *ApolloClientTestSuite) TestGetCachedItems() {
 	var should = require.New(suite.T())
 
-	resBody, err := ioutil.ReadFile("./mocks/GetCachedConfigs.json")
+	resBody, err := ioutil.ReadFile("./mocks/GetCachedItems.json")
 	should.NoError(err)
 
 	url := fmt.Sprintf("/configfiles/json/%s/%s/%s",
@@ -50,16 +50,16 @@ func (suite *ApolloClientTestSuite) TestGetCachedConfigs() {
 		Reply(200).
 		BodyString(string(resBody))
 
-	res, err := suite.client.GetCachedConfigs("application")
+	res, err := suite.client.GetCachedItems("application")
 
 	should.NoError(err)
 	should.Contains(res, "portal.elastic.document.type")
 }
 
-func (suite *ApolloClientTestSuite) TestGetConfigs() {
+func (suite *ApolloClientTestSuite) TestGetNamespace() {
 	var should = require.New(suite.T())
 
-	resBody, err := ioutil.ReadFile("./mocks/GetConfigs.json")
+	resBody, err := ioutil.ReadFile("./mocks/GetNamespace.json")
 	should.NoError(err)
 
 	url := fmt.Sprintf("/configs/%s/%s/%s",
@@ -73,8 +73,7 @@ func (suite *ApolloClientTestSuite) TestGetConfigs() {
 		Reply(200).
 		BodyString(string(resBody))
 
-	req := GetConfigsRequest{}
-	res, err := suite.client.GetConfigs(req)
+	res, err := suite.client.GetNamespace("", "")
 
 	should.NoError(err)
 	should.Equal("20170430092936-dee2d58e74515ff3", res.ReleaseKey)

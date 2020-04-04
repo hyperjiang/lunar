@@ -29,10 +29,10 @@ app.GetValue(key)
 // get value of key in namespace ns
 app.GetValueInNamespace(key, "ns")
 
-// get all the configs in ns namespace
-app.GetValues("ns")
+// get all the items in ns namespace
+app.GetItems("ns")
 
-// get the content of ns namespace, if the type of ns is properties then will return configs in json format
+// get the content of ns namespace, if the format of ns is properties then will return json string
 app.GetContent("ns")
 
 // watch changes
