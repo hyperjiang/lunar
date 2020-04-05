@@ -17,7 +17,7 @@ func TestItemsTestSuite(t *testing.T) {
 }
 
 func (ts *ItemsTestSuite) TestGet() {
-	var should = require.New(ts.T())
+	should := require.New(ts.T())
 
 	items := make(Items)
 	should.Empty(items.Get("foo"))
@@ -27,7 +27,7 @@ func (ts *ItemsTestSuite) TestGet() {
 }
 
 func (ts *ItemsTestSuite) TestString() {
-	var should = require.New(ts.T())
+	should := require.New(ts.T())
 
 	items := make(Items)
 	items["a"] = "apple"

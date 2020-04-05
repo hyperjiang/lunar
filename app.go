@@ -92,7 +92,7 @@ func (app *App) GetContent(namespace string) (string, error) {
 		}
 	}
 
-	if getFormat(namespace) != defaultFormat {
+	if !isProperties(namespace) {
 		return items.Get("content"), nil
 	}
 

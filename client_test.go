@@ -33,7 +33,7 @@ func (ts *ApolloClientTestSuite) TearDownSuite() {
 }
 
 func (ts *ApolloClientTestSuite) TestGetCachedItems() {
-	var should = require.New(ts.T())
+	should := require.New(ts.T())
 
 	resBody, err := ioutil.ReadFile("./mocks/GetCachedItems.json")
 	should.NoError(err)
@@ -56,7 +56,7 @@ func (ts *ApolloClientTestSuite) TestGetCachedItems() {
 }
 
 func (ts *ApolloClientTestSuite) TestGetNamespace() {
-	var should = require.New(ts.T())
+	should := require.New(ts.T())
 
 	resBody, err := ioutil.ReadFile("./mocks/GetNamespace_application.json")
 	should.NoError(err)
@@ -89,7 +89,7 @@ func (ts *ApolloClientTestSuite) TestGetNamespace() {
 }
 
 func (ts *ApolloClientTestSuite) TestGetNotifications() {
-	var should = require.New(ts.T())
+	should := require.New(ts.T())
 
 	resBody, err := ioutil.ReadFile("./mocks/GetNotifications.json")
 	should.NoError(err)

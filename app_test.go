@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -24,7 +25,13 @@ func TestLunarTestSuite(t *testing.T) {
 
 // SetupSuite run once at the very start of the testing suite, before any tests are run.
 func (ts *LunarTestSuite) SetupSuite() {
-	ts.app = New("SampleApp", WithLogger(Printf))
+	ts.app = New(
+		"SampleApp",
+		WithLogger(Printf),
+		WithCluster("default"),
+		WithClientTimeout(70*time.Second),
+		WithLongPollInterval(100*time.Millisecond),
+	)
 }
 
 // TearDownSuite run once at the very end of the testing suite, after all tests have been run.
@@ -59,7 +66,7 @@ func (ts *LunarTestSuite) mockGetNotifications() {
 }
 
 func (ts *LunarTestSuite) TestGetValue() {
-	var should = require.New(ts.T())
+	should := require.New(ts.T())
 
 	ts.mockGetNamespace(defaultNamespace, "")
 	v, err := ts.app.GetValue("portal.elastic.document.type")
@@ -69,7 +76,7 @@ func (ts *LunarTestSuite) TestGetValue() {
 }
 
 func (ts *LunarTestSuite) TestGetItems() {
-	var should = require.New(ts.T())
+	should := require.New(ts.T())
 
 	ts.mockGetNamespace(defaultNamespace, "")
 	items, err := ts.app.GetItems()
@@ -79,7 +86,7 @@ func (ts *LunarTestSuite) TestGetItems() {
 }
 
 func (ts *LunarTestSuite) TestGetContent() {
-	var should = require.New(ts.T())
+	should := require.New(ts.T())
 
 	ns := "a.txt"
 
@@ -99,7 +106,7 @@ func (ts *LunarTestSuite) TestGetContent() {
 }
 
 func (ts *LunarTestSuite) TestWatch() {
-	var should = require.New(ts.T())
+	should := require.New(ts.T())
 
 	ns := "a.txt"
 

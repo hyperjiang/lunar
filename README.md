@@ -40,6 +40,9 @@ app.GetItemsInNamespace("ns")
 // get the content of ns namespace, if the format of ns is properties then will return json string
 app.GetContent("ns")
 
+// it will fetch items from apollo directly without reading local cache
+app.GetNamespaceFromApollo("ns")
+
 // watch changes of given namespaces
 watchChan, errChan := app.Watch("ns1", "ns2", ...)
 
@@ -62,4 +65,16 @@ for {
 
 ```
 app := lunar.New("myAppID", lunar.WithServer("localhost:8080"), lunar.WithLogger(lunar.Printf))
+```
+
+## Caching
+
+`lunar` use memory cache by default, you can replace it with any cache which implements `lunar.Cache` interface.
+
+`lunar` also provide a file cache `lunar.FileCache` which use files for caching:
+
+```
+app := lunar.New("myAppID")
+
+app.UseCache(lunar.NewFileCache("myAppID", "/tmp"))
 ```

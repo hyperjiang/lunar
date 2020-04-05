@@ -42,6 +42,10 @@ func getFormat(namespace string) string {
 	return strings.TrimPrefix(t, ".")
 }
 
+func isProperties(namespace string) bool {
+	return getFormat(namespace) == defaultFormat
+}
+
 func normalizeNamespace(namespace string) string {
 	return strings.TrimSuffix(namespace, ".properties")
 }
