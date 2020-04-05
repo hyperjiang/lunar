@@ -99,7 +99,7 @@ func (ts *LunarTestSuite) TestGetContent() {
 }
 
 func (ts *LunarTestSuite) TestWatch() {
-	// var should = require.New(ts.T())
+	var should = require.New(ts.T())
 
 	ns := "a.txt"
 
@@ -120,7 +120,13 @@ func (ts *LunarTestSuite) TestWatch() {
 			fmt.Println(n)
 		case <-errChan:
 			ts.app.Stop()
-			return
+			goto stopped
 		}
 	}
+
+stopped:
+	content, err := ts.app.GetContent(ns)
+
+	should.NoError(err)
+	should.Equal("version 2", content)
 }

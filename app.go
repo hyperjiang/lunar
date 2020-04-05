@@ -21,6 +21,7 @@ type App struct {
 	Client          ApolloAPI // the apollo client
 	releaseKeyMap   sync.Map  // key: namespace, value: release key
 	notificationMap sync.Map  // key: namespace, value: notification id
+	cache           Cache
 	watchChan       chan Notification
 	errChan         chan error
 	stopChan        chan bool
@@ -39,7 +40,7 @@ func New(appID string, opts ...Option) *App {
 		stopChan:  make(chan bool, 1),
 	}
 
-	app.UseClient(NewApolloClient(appID, opts...))
+	app.UseClient(NewApolloClient(appID, opts...)).UseCache(new(MemoryCache))
 
 	return app
 }
@@ -51,6 +52,13 @@ func (app *App) UseClient(client ApolloAPI) *App {
 	return app
 }
 
+// UseCache sets the underlying cache
+func (app *App) UseCache(c Cache) *App {
+	app.cache = c
+
+	return app
+}
+
 // GetValue gets value of key in default namespace
 func (app *App) GetValue(key string) (string, error) {
 	return app.GetValueInNamespace(key, defaultNamespace)
@@ -58,7 +66,7 @@ func (app *App) GetValue(key string) (string, error) {
 
 // GetValueInNamespace gets value of key in given namespace
 func (app *App) GetValueInNamespace(key string, namespace string) (string, error) {
-	items, err := app.GetNamespaceFromApollo(namespace)
+	items, err := app.GetItemsInNamespace(namespace)
 	if err != nil {
 		return "", err
 	}
@@ -68,14 +76,20 @@ func (app *App) GetValueInNamespace(key string, namespace string) (string, error
 
 // GetItems gets all the items in default namespace
 func (app *App) GetItems() (Items, error) {
-	return app.GetNamespaceFromApollo(defaultNamespace)
+	return app.GetItemsInNamespace(defaultNamespace)
 }
 
 // GetContent gets the content of given namespace, if the format is properties then will return json string
 func (app *App) GetContent(namespace string) (string, error) {
-	items, err := app.GetNamespaceFromApollo(namespace)
-	if err != nil {
-		return "", err
+	// try to get from cache first
+	items := app.cache.GetItems(namespace)
+
+	var err error
+	if len(items) == 0 {
+		items, err = app.GetNamespaceFromApollo(namespace)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	if getFormat(namespace) != defaultFormat {
@@ -87,10 +101,15 @@ func (app *App) GetContent(namespace string) (string, error) {
 
 // GetItemsInNamespace gets all the items in given namespace.
 func (app *App) GetItemsInNamespace(namespace string) (Items, error) {
+	// try to get from cache first
+	if items := app.cache.GetItems(namespace); len(items) > 0 {
+		return items, nil
+	}
+
 	return app.GetNamespaceFromApollo(namespace)
 }
 
-// GetNamespaceFromApollo gets all the items in given namespace from apollo and refresh cache and map
+// GetNamespaceFromApollo gets all the items in given namespace from apollo and update the cache.
 // This is the most basic method.
 func (app *App) GetNamespaceFromApollo(namespace string) (Items, error) {
 	namespace = normalizeNamespace(namespace) // trim .properties
@@ -106,23 +125,12 @@ func (app *App) GetNamespaceFromApollo(namespace string) (Items, error) {
 	// so that it can be watched in long poll
 	app.notificationMap.LoadOrStore(namespace, defaultNotificationID)
 
-	// TODO: update cache
+	// update cache
 	if len(ns.Items) > 0 {
-
+		app.cache.SetItems(namespace, ns.Items)
 	}
 
 	return ns.Items, nil
-}
-
-// gets release key of given namespace
-func (app *App) getReleaseKey(namespace string) string {
-	if m, ok := app.releaseKeyMap.Load(namespace); ok {
-		return m.(string)
-	}
-
-	app.releaseKeyMap.Store(namespace, "")
-
-	return ""
 }
 
 // Watch watches changes from apollo using long poll
@@ -140,6 +148,22 @@ func (app *App) Watch(namespaces ...string) (<-chan Notification, <-chan error) 
 	return app.watchChan, app.errChan
 }
 
+// Stop stops watching
+func (app *App) Stop() {
+	app.stopChan <- true
+}
+
+// gets release key of given namespace
+func (app *App) getReleaseKey(namespace string) string {
+	if m, ok := app.releaseKeyMap.Load(namespace); ok {
+		return m.(string)
+	}
+
+	app.releaseKeyMap.Store(namespace, "")
+
+	return ""
+}
+
 func (app *App) startLongPoll() {
 	timer := time.NewTimer(app.LongPollInterval)
 	defer timer.Stop()
@@ -155,11 +179,6 @@ func (app *App) startLongPoll() {
 			return
 		}
 	}
-}
-
-// Stop stops watching
-func (app *App) Stop() {
-	app.stopChan <- true
 }
 
 func (app *App) longPoll() error {
