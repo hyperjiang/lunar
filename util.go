@@ -41,3 +41,25 @@ func getFormat(namespace string) string {
 
 	return strings.TrimPrefix(t, ".")
 }
+
+func normalizeNamespace(namespace string) string {
+	return strings.TrimSuffix(namespace, ".properties")
+}
+
+func refineNamespaces(namespaces []string) []string {
+	type empty struct{}
+
+	namespaces = append(namespaces, defaultNamespace)
+
+	set := make(map[string]empty)
+	for _, ns := range namespaces {
+		set[normalizeNamespace(ns)] = empty{}
+	}
+
+	var result []string
+	for k := range set {
+		result = append(result, k)
+	}
+
+	return result
+}

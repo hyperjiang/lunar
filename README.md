@@ -40,8 +40,18 @@ app.GetItemsInNamespace("ns")
 // get the content of ns namespace, if the format of ns is properties then will return json string
 app.GetContent("ns")
 
-// watch changes
-app.Watch()
+// watch changes of given namespaces
+watchChan, errChan := app.Watch("ns1", "ns2", ...)
+
+for {
+	select {
+	case n := <-watchChan:
+		fmt.Println(n)
+	case <-errChan:
+		app.Stop() // stop watcher
+		return
+	}
+}
 ```
 
 ## Logging

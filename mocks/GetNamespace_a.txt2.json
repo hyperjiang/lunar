@@ -3,7 +3,7 @@
   "cluster": "default",
   "namespaceName": "a.txt",
   "configurations": {
-    "content": "version 1"
+    "content": "version 2"
   },
-  "releaseKey": "20200404120733-61d0634459bac784"
+  "releaseKey": "20200405120733-61d0634459bac784"
 }

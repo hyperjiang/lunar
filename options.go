@@ -5,29 +5,32 @@ import (
 )
 
 const (
-	defaultServer         = "localhost:8080"
-	defaultCluster        = "default"
-	defaultNamespace      = "application"
-	defaultFormat         = "properties"
-	defaultNotificationID = -1
-	defaultClientTimeout  = time.Second * 90
+	defaultServer           = "localhost:8080"
+	defaultCluster          = "default"
+	defaultNamespace        = "application"
+	defaultFormat           = "properties"
+	defaultNotificationID   = -1
+	defaultClientTimeout    = time.Second * 90
+	defaultLongPollInterval = time.Second
 )
 
 // Options is common options
 type Options struct {
-	Server        string
-	Cluster       string
-	ClientTimeout time.Duration
-	Logger        Logger
+	Server           string
+	Cluster          string
+	Logger           Logger
+	ClientTimeout    time.Duration
+	LongPollInterval time.Duration
 }
 
 // NewOptions creates options with defaults
 func NewOptions(opts ...Option) Options {
 	var options = Options{
-		Server:        normalizeURL(defaultServer),
-		Cluster:       defaultCluster,
-		ClientTimeout: defaultClientTimeout,
-		Logger:        defaultLogger,
+		Server:           normalizeURL(defaultServer),
+		Cluster:          defaultCluster,
+		ClientTimeout:    defaultClientTimeout,
+		LongPollInterval: defaultLongPollInterval,
+		Logger:           defaultLogger,
 	}
 	for _, opt := range opts {
 		opt(&options)
@@ -64,5 +67,12 @@ func WithLogger(logger Logger) Option {
 func WithClientTimeout(timeout time.Duration) Option {
 	return func(o *Options) {
 		o.ClientTimeout = timeout
+	}
+}
+
+// WithLongPollInterval sets long poll interval
+func WithLongPollInterval(interval time.Duration) Option {
+	return func(o *Options) {
+		o.LongPollInterval = interval
 	}
 }

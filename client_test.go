@@ -106,7 +106,7 @@ func (ts *ApolloClientTestSuite) TestGetNotifications() {
 	res, err := ts.client.GetNotifications(nil)
 
 	should.NoError(err)
-	should.Len(res, 1)
+	should.Len(res, 2)
 	should.Equal(defaultNamespace, res[0].Namespace)
 	should.Equal(101, res[0].NotificationID)
 

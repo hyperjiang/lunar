@@ -2,5 +2,9 @@
   {
     "namespaceName": "application",
     "notificationId": 101
+  },
+  {
+    "namespaceName": "a.txt",
+    "notificationId": 1
   }
 ]
