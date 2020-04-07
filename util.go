@@ -32,14 +32,26 @@ func getLocalIP() string {
 	return ""
 }
 
-func getFormat(namespace string) string {
-	t := filepath.Ext(namespace)
+func isSupported(format string) bool {
+	supportedFormats := []string{".properties", ".xml", ".json", ".yml", ".yaml", ".txt"}
 
-	if t == "" {
-		t = defaultFormat
+	for _, f := range supportedFormats {
+		if format == f {
+			return true
+		}
 	}
 
-	return strings.TrimPrefix(t, ".")
+	return false
+}
+
+func getFormat(namespace string) string {
+	ext := filepath.Ext(namespace)
+
+	if ext == "" || !isSupported(ext) {
+		ext = defaultFormat
+	}
+
+	return strings.TrimPrefix(ext, ".")
 }
 
 func isProperties(namespace string) bool {

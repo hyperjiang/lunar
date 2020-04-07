@@ -51,10 +51,13 @@ func TestGetFormat(t *testing.T) {
 			"abc.json",
 			"json",
 		},
-
 		{
 			"abc.def.yaml",
 			"yaml",
+		},
+		{
+			"abc.common",
+			"properties",
 		},
 	}
 
