@@ -15,6 +15,7 @@ type Cache interface {
 	SetItems(namespace string, items Items) error
 	GetKeys() []string
 	Delete(namespace string) error
+	Drain()
 }
 
 // MemoryCache is cache stored in memory, it's the default cache for use
@@ -59,6 +60,15 @@ func (c *MemoryCache) Delete(namespace string) error {
 	c.items.Delete(namespace)
 
 	return nil
+}
+
+// Drain deletes the whole cache
+func (c *MemoryCache) Drain() {
+	c.items.Range(func(key, value interface{}) bool {
+		c.items.Delete(key)
+
+		return true
+	})
 }
 
 // FileCache is cache stored in files.
@@ -158,4 +168,11 @@ func (c *FileCache) GetKeys() []string {
 // Delete deletes given namespace
 func (c *FileCache) Delete(namespace string) error {
 	return syscall.Unlink(c.getFilePath(namespace))
+}
+
+// Drain deletes the whole cache
+func (c *FileCache) Drain() {
+	for _, namespace := range c.GetKeys() {
+		syscall.Unlink(c.getFilePath(namespace))
+	}
 }

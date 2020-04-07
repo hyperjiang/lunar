@@ -23,15 +23,23 @@ func (ts *CacheTestSuite) TestMemoryCache() {
 	items["a"] = "apple"
 	items["b"] = "banana"
 
+	items2 := make(Items)
+	items2["content"] = "this is plaintext"
+
 	cache := new(MemoryCache)
 	cache.SetItems("ns", items)
+	cache.SetItems("ns.txt", items2)
 
 	should.Equal("apple", cache.GetItems("ns").Get("a"))
-	should.Equal([]string{"ns"}, cache.GetKeys())
+	should.Equal("this is plaintext", cache.GetItems("ns.txt").Get("content"))
+	should.ElementsMatch([]string{"ns", "ns.txt"}, cache.GetKeys())
 
 	cache.Delete("ns")
-
 	should.Len(cache.GetItems("ns"), 0)
+	should.Len(cache.GetKeys(), 1)
+
+	cache.Drain()
+	should.Len(cache.GetKeys(), 0)
 }
 
 func (ts *CacheTestSuite) TestFileCache() {
@@ -50,9 +58,12 @@ func (ts *CacheTestSuite) TestFileCache() {
 
 	should.Equal("apple", cache.GetItems("ns").Get("a"))
 	should.Equal("this is plaintext", cache.GetItems("ns.txt").Get("content"))
-	should.Equal([]string{"ns", "ns.txt"}, cache.GetKeys())
+	should.ElementsMatch([]string{"ns", "ns.txt"}, cache.GetKeys())
 
 	cache.Delete("ns")
-
 	should.Len(cache.GetItems("ns"), 0)
+	should.Len(cache.GetKeys(), 1)
+
+	cache.Drain()
+	should.Len(cache.GetKeys(), 0)
 }
