@@ -12,6 +12,7 @@ type Lunar interface {
 	GetItems() (Items, error)
 	GetItemsInNamespace(namespace string) (Items, error)
 	GetContent(namespace string) (string, error)
+	GetReleaseKeys() map[string]string // key: namespace, value: release key
 }
 
 // App represents a single application, an application has a unique app id and manage multiple namespaces.
@@ -57,6 +58,22 @@ func (app *App) UseCache(c Cache) *App {
 	app.cache = c
 
 	return app
+}
+
+// GetReleaseKeys gets namespace and release key map
+func (app *App) GetReleaseKeys() map[string]string {
+	m := make(map[string]string)
+
+	app.releaseKeyMap.Range(func(key, value interface{}) bool {
+		k, _ := key.(string)
+		v, _ := value.(string)
+
+		m[k] = v
+
+		return true
+	})
+
+	return m
 }
 
 // GetValue gets value of key in default namespace
