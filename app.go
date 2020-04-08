@@ -136,7 +136,10 @@ func (app *App) GetNamespaceFromApollo(namespace string) (Items, error) {
 		return nil, err
 	}
 
-	app.releaseKeyMap.Store(namespace, ns.ReleaseKey)
+	// only update release key when it's not empty
+	if ns.ReleaseKey != "" {
+		app.releaseKeyMap.Store(namespace, ns.ReleaseKey)
+	}
 
 	// add namespace to notification map with default notification id if not existing,
 	// so that it can be watched in long poll
