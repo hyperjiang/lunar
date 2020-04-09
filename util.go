@@ -14,7 +14,8 @@ func normalizeURL(url string) string {
 	return strings.TrimSuffix(url, "/")
 }
 
-func getLocalIP() string {
+// GetLocalIP gets local ip
+func GetLocalIP() string {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		return ""
@@ -44,7 +45,8 @@ func isSupported(format string) bool {
 	return false
 }
 
-func getFormat(namespace string) string {
+// GetFormat gets the format of namespace
+func GetFormat(namespace string) string {
 	ext := filepath.Ext(namespace)
 
 	if ext == "" || !isSupported(ext) {
@@ -54,8 +56,9 @@ func getFormat(namespace string) string {
 	return strings.TrimPrefix(ext, ".")
 }
 
-func isProperties(namespace string) bool {
-	return getFormat(namespace) == defaultFormat
+// IsProperties checks if the format of namespace is properties
+func IsProperties(namespace string) bool {
+	return GetFormat(namespace) == defaultFormat
 }
 
 func normalizeNamespace(namespace string) string {
@@ -78,4 +81,37 @@ func refineNamespaces(namespaces []string) []string {
 	}
 
 	return result
+}
+
+func expand(ks []string, v interface{}) map[string]interface{} {
+	l := len(ks)
+
+	if l == 0 {
+		return nil
+	}
+
+	if l == 1 {
+		m := make(map[string]interface{})
+		m[ks[0]] = v
+		return m
+	}
+
+	res := make(map[string]interface{})
+	m := make(map[string]interface{})
+	m[ks[l-1]] = v
+	res[ks[l-2]] = m
+
+	if l == 2 {
+		return res
+	}
+
+	return expand(ks[0:l-2], res)
+}
+
+// Expand expands map with dot keys into nested map.
+// e.g. key = "a.b", value = "c" will become map["a"]["b"] = "c"
+func Expand(k string, v interface{}) map[string]interface{} {
+	ks := strings.Split(k, ".")
+
+	return expand(ks, v)
 }

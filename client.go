@@ -33,7 +33,7 @@ func NewApolloClient(appID string, opts ...Option) *ApolloClient {
 	c := &ApolloClient{
 		AppID:    appID,
 		Options:  NewOptions(opts...),
-		ClientIP: getLocalIP(),
+		ClientIP: GetLocalIP(),
 	}
 
 	c.Client = &http.Client{

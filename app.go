@@ -109,7 +109,7 @@ func (app *App) GetContent(namespace string) (string, error) {
 		}
 	}
 
-	if !isProperties(namespace) {
+	if !IsProperties(namespace) {
 		return items.Get("content"), nil
 	}
 

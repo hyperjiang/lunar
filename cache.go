@@ -124,7 +124,7 @@ func (c *FileCache) GetItems(namespace string) Items {
 	items := make(Items)
 
 	if data, err := ioutil.ReadFile(c.getFilePath(namespace)); err == nil {
-		if isProperties(namespace) {
+		if IsProperties(namespace) {
 			json.Unmarshal(data, &items)
 		} else {
 			items["content"] = string(data)
@@ -140,7 +140,7 @@ func (c *FileCache) SetItems(namespace string, items Items) error {
 	defer c.lock.Unlock()
 
 	var content string
-	if isProperties(namespace) {
+	if IsProperties(namespace) {
 		content = items.String()
 	} else {
 		content = items.Get("content")
