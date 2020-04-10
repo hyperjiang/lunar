@@ -19,11 +19,12 @@ func (items Items) Get(key string) string {
 
 // String converts Items to json string
 func (items Items) String() string {
-	bytes, _ := json.Marshal(items.parse())
+	bytes, _ := json.Marshal(items.Expand())
 	return string(bytes)
 }
 
-func (items Items) parse() interface{} {
+// Expand expands dot-key items to nested map
+func (items Items) Expand() interface{} {
 	var root Node
 	for k, v := range items {
 		ks := strings.Split(k, ".")
