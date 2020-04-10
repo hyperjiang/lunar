@@ -102,7 +102,7 @@ func (ts *LunarTestSuite) TestGetContent() {
 	content, err = ts.app.GetContent(ns)
 
 	should.NoError(err)
-	should.Equal("{\"portal.elastic.cluster.name\":\"hermes-es-fws\",\"portal.elastic.document.type\":\"biz\"}", content)
+	should.Equal("{\"portal\":{\"elastic\":{\"cluster\":{\"name\":\"hermes-es-fws\"},\"document\":{\"type\":\"biz\"}}}}", content)
 
 	m := ts.app.GetReleaseKeys()
 	should.Contains(m, "a.txt")

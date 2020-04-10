@@ -82,36 +82,3 @@ func refineNamespaces(namespaces []string) []string {
 
 	return result
 }
-
-func expand(ks []string, v interface{}) map[string]interface{} {
-	l := len(ks)
-
-	if l == 0 {
-		return nil
-	}
-
-	if l == 1 {
-		m := make(map[string]interface{})
-		m[ks[0]] = v
-		return m
-	}
-
-	res := make(map[string]interface{})
-	m := make(map[string]interface{})
-	m[ks[l-1]] = v
-	res[ks[l-2]] = m
-
-	if l == 2 {
-		return res
-	}
-
-	return expand(ks[0:l-2], res)
-}
-
-// Expand expands map with dot keys into nested map.
-// e.g. key = "a.b", value = "c" will become map["a"]["b"] = "c"
-func Expand(k string, v interface{}) map[string]interface{} {
-	ks := strings.Split(k, ".")
-
-	return expand(ks, v)
-}
