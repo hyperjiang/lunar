@@ -22,7 +22,7 @@ type App struct {
 	Client          ApolloAPI // the apollo client
 	releaseKeyMap   sync.Map  // key: namespace, value: release key
 	notificationMap sync.Map  // key: namespace, value: notification id
-	cache           Cache
+	Cache           Cache
 	watchChan       chan Notification
 	errChan         chan error
 	stopChan        chan bool
@@ -55,7 +55,7 @@ func (app *App) UseClient(client ApolloAPI) *App {
 
 // UseCache sets the underlying cache
 func (app *App) UseCache(c Cache) *App {
-	app.cache = c
+	app.Cache = c
 
 	return app
 }
@@ -99,7 +99,7 @@ func (app *App) GetItems() (Items, error) {
 // GetContent gets the content of given namespace, if the format is properties then will return json string
 func (app *App) GetContent(namespace string) (string, error) {
 	// try to get from cache first
-	items := app.cache.GetItems(namespace)
+	items := app.Cache.GetItems(namespace)
 
 	var err error
 	if len(items) == 0 {
@@ -119,7 +119,7 @@ func (app *App) GetContent(namespace string) (string, error) {
 // GetItemsInNamespace gets all the items in given namespace.
 func (app *App) GetItemsInNamespace(namespace string) (Items, error) {
 	// try to get from cache first
-	if items := app.cache.GetItems(namespace); len(items) > 0 {
+	if items := app.Cache.GetItems(namespace); len(items) > 0 {
 		return items, nil
 	}
 
@@ -147,7 +147,7 @@ func (app *App) GetNamespaceFromApollo(namespace string) (Items, error) {
 
 	// update cache
 	if len(ns.Items) > 0 {
-		app.cache.SetItems(namespace, ns.Items)
+		app.Cache.SetItems(namespace, ns.Items)
 	}
 
 	return ns.Items, nil
