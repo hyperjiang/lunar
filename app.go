@@ -126,7 +126,7 @@ func (app *App) GetItemsInNamespace(namespace string) (Items, error) {
 	return app.GetNamespaceFromApollo(namespace)
 }
 
-// GetNamespaceFromApollo gets all the items in given namespace from apollo and update the cache.
+// GetNamespaceFromApollo gets realtime data in given namespace from apollo and update local cache.
 // This is the most basic method.
 func (app *App) GetNamespaceFromApollo(namespace string) (Items, error) {
 	namespace = normalizeNamespace(namespace) // trim .properties
@@ -145,7 +145,7 @@ func (app *App) GetNamespaceFromApollo(namespace string) (Items, error) {
 	// so that it can be watched in long poll
 	app.notificationMap.LoadOrStore(namespace, defaultNotificationID)
 
-	// update cache
+	// update local cache
 	if len(ns.Items) > 0 {
 		app.Cache.SetItems(namespace, ns.Items)
 	}
@@ -195,7 +195,7 @@ func (app *App) startLongPoll() {
 			app.longPoll()
 			timer.Reset(app.LongPollInterval)
 		case <-app.stopChan:
-			app.Logger.Printf("stop watching")
+			app.Logger.Printf("[%s] stop watching", app.ID)
 			return
 		}
 	}
@@ -212,7 +212,7 @@ func (app *App) longPoll() error {
 			app.watchChan <- notification
 		}
 	} else {
-		app.Logger.Printf("fail to fetch notifications: %s", err.Error())
+		app.Logger.Printf("[%s] fail to fetch notifications: %s", app.ID, err.Error())
 		app.errChan <- err
 
 		return err
