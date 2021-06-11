@@ -67,6 +67,12 @@ for {
 app := lunar.New("myAppID", lunar.WithServer("localhost:8080"), lunar.WithLogger(lunar.Printf))
 ```
 
+Or you can use `UseLogger` method:
+
+```
+app.UseLogger(lunar.Printf)
+```
+
 ## Caching
 
 `lunar` use memory cache by default, you can replace it with any cache which implements `lunar.Cache` interface.

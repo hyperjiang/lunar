@@ -60,6 +60,13 @@ func (app *App) UseCache(c Cache) *App {
 	return app
 }
 
+// UseLogger sets the logger
+func (app *App) UseLogger(l Logger) *App {
+	app.Logger = l
+
+	return app
+}
+
 // GetReleaseKeys gets namespace and release key map
 func (app *App) GetReleaseKeys() map[string]string {
 	m := make(map[string]string)
