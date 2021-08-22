@@ -43,12 +43,20 @@ func NewApolloClient(appID string, opts ...Option) *ApolloClient {
 	return c
 }
 
-func (c *ApolloClient) get(url string, result interface{}) error {
+func (c *ApolloClient) get(pathWithQuery string, result interface{}) error {
+	url := c.Server + pathWithQuery
 	c.Logger.Printf("%s", url)
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return err
+	}
+
+	if len(c.AccessKeySecret) > 0 {
+		headers := buildHeaders(pathWithQuery, c.AppID, c.AccessKeySecret)
+		for k, v := range headers {
+			req.Header.Add(k, v)
+		}
 	}
 
 	resp, err := c.Client.Do(req)
@@ -73,8 +81,7 @@ func (c *ApolloClient) get(url string, result interface{}) error {
 
 // GetCachedItems gets cached configs from apollo
 func (c *ApolloClient) GetCachedItems(namespace string) (Items, error) {
-	url := fmt.Sprintf("%s/configfiles/json/%s/%s/%s?ip=%s",
-		c.Server,
+	url := fmt.Sprintf("/configfiles/json/%s/%s/%s?ip=%s",
 		url.QueryEscape(c.AppID),
 		url.QueryEscape(c.Cluster),
 		url.QueryEscape(namespace),
@@ -102,8 +109,7 @@ func (c *ApolloClient) GetNamespace(namespace string, releaseKey string) (*Names
 		namespace = defaultNamespace
 	}
 
-	url := fmt.Sprintf("%s/configs/%s/%s/%s?releaseKey=%s&ip=%s",
-		c.Server,
+	url := fmt.Sprintf("/configs/%s/%s/%s?releaseKey=%s&ip=%s",
 		url.QueryEscape(c.AppID),
 		url.QueryEscape(c.Cluster),
 		url.QueryEscape(namespace),
@@ -138,8 +144,7 @@ func (c *ApolloClient) GetNotifications(ns Notifications) (Notifications, error)
 		ns = append(ns, Notification{Namespace: defaultNamespace, NotificationID: defaultNotificationID})
 	}
 
-	url := fmt.Sprintf("%s/notifications/v2?appId=%s&cluster=%s&notifications=%s",
-		c.Server,
+	url := fmt.Sprintf("/notifications/v2?appId=%s&cluster=%s&notifications=%s",
 		url.QueryEscape(c.AppID),
 		url.QueryEscape(c.Cluster),
 		url.QueryEscape(ns.String()),

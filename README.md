@@ -84,3 +84,15 @@ app := lunar.New("myAppID")
 
 app.UseCache(lunar.NewFileCache("myAppID", "/tmp"))
 ```
+
+## Enable Access Key
+
+You can use `WithAccessKeySecret` to enable access key feature:
+
+```
+app := lunar.New(
+	"myAppID",
+	lunar.WithServer("localhost:8080"),
+	lunar.WithAccessKeySecret("mySecret"),
+)
+```

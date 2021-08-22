@@ -24,7 +24,12 @@ func TestApolloClientTestSuite(t *testing.T) {
 
 // SetupSuite run once at the very start of the testing suite, before any tests are run.
 func (ts *ApolloClientTestSuite) SetupSuite() {
-	ts.client = NewApolloClient("SampleApp", WithServer("localhost:8080"), WithLogger(Printf))
+	ts.client = NewApolloClient(
+		"SampleApp",
+		WithServer("localhost:8080"),
+		WithLogger(Printf),
+		WithAccessKeySecret("12848b38781e4daf9d05054580282a8e"),
+	)
 }
 
 // TearDownSuite run once at the very end of the testing suite, after all tests have been run.

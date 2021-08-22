@@ -1,6 +1,7 @@
 package lunar
 
 import (
+	"strings"
 	"time"
 )
 
@@ -18,6 +19,7 @@ const (
 type Options struct {
 	Server           string
 	Cluster          string
+	AccessKeySecret  string
 	Logger           Logger
 	ClientTimeout    time.Duration
 	LongPollInterval time.Duration
@@ -74,5 +76,12 @@ func WithClientTimeout(timeout time.Duration) Option {
 func WithLongPollInterval(interval time.Duration) Option {
 	return func(o *Options) {
 		o.LongPollInterval = interval
+	}
+}
+
+// WithAccessKeySecret sets access key secret
+func WithAccessKeySecret(secret string) Option {
+	return func(o *Options) {
+		o.AccessKeySecret = strings.TrimSpace(secret)
 	}
 }
