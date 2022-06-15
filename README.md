@@ -1,7 +1,7 @@
 # lunar
 
 [![GoDoc](https://godoc.org/github.com/hyperjiang/lunar?status.svg)](https://godoc.org/github.com/hyperjiang/lunar)
-[![Build Status](https://app.travis-ci.com/hyperjiang/lunar.svg?branch=master)](https://app.travis-ci.com/hyperjiang/lunar)
+[![CI](https://github.com/hyperjiang/lunar/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/hyperjiang/lunar/actions/workflows/ci.yml)
 [![](https://goreportcard.com/badge/github.com/hyperjiang/lunar)](https://goreportcard.com/report/github.com/hyperjiang/lunar)
 [![codecov](https://codecov.io/gh/hyperjiang/lunar/branch/master/graph/badge.svg)](https://codecov.io/gh/hyperjiang/lunar)
 [![Release](https://img.shields.io/github/release/hyperjiang/lunar.svg)](https://github.com/hyperjiang/lunar/releases)
