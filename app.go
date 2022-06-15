@@ -55,7 +55,9 @@ func (app *App) UseClient(client ApolloAPI) *App {
 
 // UseCache sets the underlying cache
 func (app *App) UseCache(c Cache) *App {
-	app.Cache = c
+	if c != nil {
+		app.Cache = c
+	}
 
 	return app
 }
@@ -154,10 +156,10 @@ func (app *App) GetNamespaceFromApollo(namespace string) (Items, error) {
 
 	// update local cache
 	if len(ns.Items) > 0 {
-		app.Cache.SetItems(namespace, ns.Items)
+		err = app.Cache.SetItems(namespace, ns.Items)
 	}
 
-	return ns.Items, nil
+	return ns.Items, err
 }
 
 // Watch watches changes from apollo using long poll
@@ -166,7 +168,9 @@ func (app *App) Watch(namespaces ...string) (<-chan Notification, <-chan error) 
 
 	// get data from apollo and initialize local namespaces data at the beginning
 	for _, namespace := range namespaces {
-		app.GetNamespaceFromApollo(namespace)
+		if _, err := app.GetNamespaceFromApollo(namespace); err != nil {
+			app.Logger.Printf("[%s][%s] fail to get data: %s", app.ID, namespace, err.Error())
+		}
 	}
 
 	// start long poll in goroutine
@@ -208,24 +212,22 @@ func (app *App) startLongPoll() {
 	}
 }
 
-func (app *App) longPoll() error {
+func (app *App) longPoll() {
 	if notifications, err := app.Client.GetNotifications(app.getNotifications()); err == nil {
 		// notifications will be empty if no changes
 		for _, notification := range notifications {
 			// update notification id and then fetch latest data from apollo
 			app.notificationMap.Store(notification.Namespace, notification.NotificationID)
-			app.GetNamespaceFromApollo(notification.Namespace)
+			if _, err := app.GetNamespaceFromApollo(notification.Namespace); err != nil {
+				app.Logger.Printf("[%s][%s] fail to get data: %s", app.ID, notification.Namespace, err.Error())
+			}
 
 			app.watchChan <- notification
 		}
 	} else {
 		app.Logger.Printf("[%s] fail to fetch notifications: %s", app.ID, err.Error())
 		app.errChan <- err
-
-		return err
 	}
-
-	return nil
 }
 
 func (app *App) getNotifications() Notifications {

@@ -3,6 +3,7 @@ package lunar
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -94,7 +95,9 @@ func NewFileCache(appID string, folder string) *FileCache {
 		Perm:   0666,
 	}
 
-	c.createAppFolder()
+	if err := c.createAppFolder(); err != nil {
+		return nil
+	}
 
 	return c
 }
@@ -125,7 +128,9 @@ func (c *FileCache) GetItems(namespace string) Items {
 
 	if data, err := ioutil.ReadFile(c.getFilePath(namespace)); err == nil {
 		if IsProperties(namespace) {
-			json.Unmarshal(data, &items)
+			if err := json.Unmarshal(data, &items); err != nil {
+				log.Printf("parse data error: %s", err.Error())
+			}
 		} else {
 			items["content"] = string(data)
 		}
@@ -173,6 +178,8 @@ func (c *FileCache) Delete(namespace string) error {
 // Drain deletes the whole cache
 func (c *FileCache) Drain() {
 	for _, namespace := range c.GetKeys() {
-		syscall.Unlink(c.getFilePath(namespace))
+		if err := syscall.Unlink(c.getFilePath(namespace)); err != nil {
+			log.Printf("failed to delete cache file: %s", err.Error())
+		}
 	}
 }

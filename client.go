@@ -140,7 +140,7 @@ type Notification struct {
 
 // GetNotifications gets notifications from apollo
 func (c *ApolloClient) GetNotifications(ns Notifications) (Notifications, error) {
-	if ns == nil || len(ns) == 0 {
+	if len(ns) == 0 {
 		ns = append(ns, Notification{Namespace: defaultNamespace, NotificationID: defaultNotificationID})
 	}
 
