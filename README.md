@@ -16,6 +16,8 @@ Default settings of `lunar`:
 - default server is `localhost:8080`
 - default http client timeout is `90s`
 
+*Require golang version >= 1.16 after v0.6.0*
+
 ## Usage
 
 ```

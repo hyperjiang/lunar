@@ -2,7 +2,6 @@ package lunar
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -126,7 +125,7 @@ func (c *FileCache) GetItems(namespace string) Items {
 
 	items := make(Items)
 
-	if data, err := ioutil.ReadFile(c.getFilePath(namespace)); err == nil {
+	if data, err := os.ReadFile(c.getFilePath(namespace)); err == nil {
 		if IsProperties(namespace) {
 			if err := json.Unmarshal(data, &items); err != nil {
 				log.Printf("parse data error: %s", err.Error())
@@ -151,7 +150,7 @@ func (c *FileCache) SetItems(namespace string, items Items) error {
 		content = items.Get("content")
 	}
 
-	return ioutil.WriteFile(c.getFilePath(namespace), []byte(content), c.Perm)
+	return os.WriteFile(c.getFilePath(namespace), []byte(content), c.Perm)
 }
 
 // GetKeys gets all the keys (namespaces)

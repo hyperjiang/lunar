@@ -2,14 +2,14 @@ package lunar
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"testing"
 
+	"github.com/h2non/gock"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	gock "gopkg.in/h2non/gock.v1"
 )
 
 type ApolloClientTestSuite struct {
@@ -40,7 +40,7 @@ func (ts *ApolloClientTestSuite) TearDownSuite() {
 func (ts *ApolloClientTestSuite) TestGetCachedItems() {
 	should := require.New(ts.T())
 
-	resBody, err := ioutil.ReadFile("./mocks/GetCachedItems.json")
+	resBody, err := os.ReadFile("./mocks/GetCachedItems.json")
 	should.NoError(err)
 
 	url := fmt.Sprintf("/configfiles/json/%s/%s/%s",
@@ -63,7 +63,7 @@ func (ts *ApolloClientTestSuite) TestGetCachedItems() {
 func (ts *ApolloClientTestSuite) TestGetNamespace() {
 	should := require.New(ts.T())
 
-	resBody, err := ioutil.ReadFile("./mocks/GetNamespace_application.json")
+	resBody, err := os.ReadFile("./mocks/GetNamespace_application.json")
 	should.NoError(err)
 
 	url := fmt.Sprintf("/configs/%s/%s/%s",
@@ -96,7 +96,7 @@ func (ts *ApolloClientTestSuite) TestGetNamespace() {
 func (ts *ApolloClientTestSuite) TestGetNotifications() {
 	should := require.New(ts.T())
 
-	resBody, err := ioutil.ReadFile("./mocks/GetNotifications.json")
+	resBody, err := os.ReadFile("./mocks/GetNotifications.json")
 	should.NoError(err)
 
 	url := "/notifications/v2"

@@ -2,15 +2,15 @@ package lunar
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"testing"
 	"time"
 
+	"github.com/h2non/gock"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	gock "gopkg.in/h2non/gock.v1"
 )
 
 type LunarTestSuite struct {
@@ -40,7 +40,7 @@ func (ts *LunarTestSuite) TearDownSuite() {
 }
 
 func (ts *LunarTestSuite) mockGetNamespace(namespace, version string) {
-	resBody, _ := ioutil.ReadFile("./mocks/GetNamespace_" + namespace + version + ".json")
+	resBody, _ := os.ReadFile("./mocks/GetNamespace_" + namespace + version + ".json")
 
 	url := fmt.Sprintf("/configs/%s/%s/%s",
 		url.QueryEscape(ts.app.ID),
@@ -55,7 +55,7 @@ func (ts *LunarTestSuite) mockGetNamespace(namespace, version string) {
 }
 
 func (ts *LunarTestSuite) mockGetNotifications() {
-	resBody, _ := ioutil.ReadFile("./mocks/GetNotifications.json")
+	resBody, _ := os.ReadFile("./mocks/GetNotifications.json")
 
 	url := "/notifications/v2"
 
